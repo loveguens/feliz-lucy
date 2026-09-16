@@ -1,0 +1,3068 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>Birthday Universe</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  touch-action:none;
+  font-family:Arial,sans-serif;
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  display:block;
+}
+
+
+/* =========================
+   INICIO
+========================= */
+
+#inicio{
+  position:fixed;
+  inset:0;
+  z-index:100;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:
+    radial-gradient(circle at 15% 80%,#00eaff40,transparent 38%),
+    radial-gradient(circle at 85% 20%,#ff42d740,transparent 38%),
+    radial-gradient(circle at 50% 45%,#784cff30,transparent 45%),
+    #010006;
+
+  transition:opacity .8s;
+}
+
+#card{
+  width:86%;
+  max-width:480px;
+
+  padding:40px 22px;
+
+  text-align:center;
+
+  border-radius:28px;
+
+  border:1px solid #65efff66;
+
+  background:#070318dd;
+
+  box-shadow:
+    0 0 40px #00eaff40,
+    0 0 80px #ff40d630,
+    inset 0 0 35px #785cff20;
+}
+
+#card h1{
+  color:white;
+
+  font-family:Georgia,serif;
+
+  font-size:clamp(42px,11vw,72px);
+
+  line-height:.95;
+
+  text-shadow:
+    0 0 8px white,
+    0 0 22px #54efff,
+    0 0 45px #ff45d8;
+}
+
+#principal{
+  font-size:68px;
+  margin:18px;
+}
+
+#datos{
+  color:#92f7ff;
+
+  font-family:monospace;
+
+  letter-spacing:3px;
+
+  line-height:1.8;
+
+  text-shadow:
+    0 0 10px #00eaff;
+}
+
+#entrar{
+  margin-top:24px;
+
+  padding:14px 30px;
+
+  border:0;
+
+  border-radius:30px;
+
+  color:white;
+
+  font-weight:bold;
+
+  background:
+    linear-gradient(
+      90deg,
+      #00dfff,
+      #795cff,
+      #ff3bd4
+    );
+
+  box-shadow:
+    0 0 25px #00ddff70;
+
+  cursor:pointer;
+}
+
+
+/* =========================
+   MÚSICA
+========================= */
+
+#musica{
+  position:fixed;
+
+  top:15px;
+  right:15px;
+
+  z-index:50;
+
+  display:none;
+
+  padding:11px 16px;
+
+  border:
+    1px solid #71efff;
+
+  border-radius:30px;
+
+  color:white;
+
+  font-weight:bold;
+
+  font-size:12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(0,210,255,.25),
+      rgba(125,80,255,.25),
+      rgba(255,60,210,.25)
+    );
+
+  backdrop-filter:
+    blur(12px);
+
+  box-shadow:
+    0 0 15px #00eaff60,
+    0 0 25px #ff40d540;
+
+  cursor:pointer;
+}
+
+#musica.activa{
+  border-color:#ff71df;
+
+  box-shadow:
+    0 0 20px #00eaff,
+    0 0 30px #ff40d570;
+}
+
+
+/* =========================
+   INDICACIONES
+========================= */
+
+#ayuda{
+  position:fixed;
+
+  left:50%;
+  bottom:20px;
+
+  transform:
+    translateX(-50%);
+
+  width:94%;
+
+  z-index:30;
+
+  text-align:center;
+
+  color:#a0f7ff;
+
+  font-family:monospace;
+
+  font-size:11px;
+
+  line-height:1.6;
+
+  text-shadow:
+    0 0 10px #00ddff;
+
+  pointer-events:none;
+
+  opacity:0;
+
+  transition:opacity 1s;
+}
+
+
+/* =========================
+   FRASE SELECCIONADA
+========================= */
+
+#lector{
+  position:fixed;
+
+  left:50%;
+  bottom:70px;
+
+  transform:
+    translateX(-50%)
+    translateY(20px);
+
+  z-index:50;
+
+  width:min(90%,520px);
+
+  padding:18px 20px;
+
+  border-radius:20px;
+
+  border:
+    1px solid #6defff70;
+
+  background:
+    rgba(3,5,20,.90);
+
+  color:white;
+
+  text-align:center;
+
+  font-size:18px;
+
+  font-weight:bold;
+
+  line-height:1.4;
+
+  text-shadow:
+    0 0 12px #56eaff;
+
+  box-shadow:
+    0 0 25px #00ddff35,
+    0 0 35px #ff42d525;
+
+  backdrop-filter:
+    blur(12px);
+
+  opacity:0;
+
+  pointer-events:none;
+
+  transition:
+    opacity .3s,
+    transform .3s;
+}
+
+#lector.visible{
+  opacity:1;
+
+  transform:
+    translateX(-50%)
+    translateY(0);
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     PANTALLA INICIAL
+========================= -->
+
+<div id="inicio">
+
+  <div id="card">
+
+    <h1>
+      Birthday<br>
+      Universo
+    </h1>
+
+    <div id="principal">
+      🎂✨💗
+    </div>
+
+    <div id="datos"></div>
+
+    <button id="entrar">
+      ENTRAR AL UNIVERSO ✨
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     BOTÓN MÚSICA
+========================= -->
+
+<button id="musica">
+  🎵 MÚSICA
+</button>
+
+
+<!--
+  CUANDO TENGAS TU CANCIÓN:
+
+  pon un archivo llamado:
+
+  musica.mp3
+
+  junto al HTML.
+-->
+
+<audio id="audio" loop>
+
+  <source
+    src="musica.mp3"
+    type="audio/mpeg"
+  >
+
+</audio>
+
+
+<div id="lector"></div>
+
+
+<div id="ayuda">
+
+  ✨ EL UNIVERSO GIRA SOLO
+
+  <br>
+
+  ✋ TOCA PARA DETENER
+
+  ·
+
+  👆 ARRASTRA PARA EXPLORAR
+
+</div>
+
+
+<script type="module">
+
+
+/* =====================================================
+   CAMBIA ESTOS DATOS
+===================================================== */
+
+const NOMBRE =
+"TU NOMBRE";
+
+
+const EDAD =
+"18";
+
+
+document.querySelector(
+  "#datos"
+).innerHTML =
+
+`
+PARA ${NOMBRE.toUpperCase()}
+<br>
+${EDAD} AÑOS
+`;
+
+
+/* =====================================================
+   THREE.JS
+===================================================== */
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.180.0/+esm";
+
+
+/* =====================================================
+   ESCENA
+===================================================== */
+
+const scene =
+new THREE.Scene();
+
+
+scene.background =
+new THREE.Color(
+  "#000003"
+);
+
+
+scene.fog =
+new THREE.FogExp2(
+  0x000003,
+  .0027
+);
+
+
+/* =====================================================
+   CÁMARA
+===================================================== */
+
+const camera =
+new THREE.PerspectiveCamera(
+
+  70,
+
+  innerWidth /
+  innerHeight,
+
+  .1,
+
+  1000
+
+);
+
+
+camera.position.set(
+  0,
+  0,
+  0
+);
+
+
+/* =====================================================
+   RENDERER
+===================================================== */
+
+const renderer =
+new THREE.WebGLRenderer({
+
+  antialias:true,
+
+  powerPreference:
+    "high-performance"
+
+});
+
+
+renderer.setPixelRatio(
+
+  Math.min(
+    devicePixelRatio,
+    1.6
+  )
+
+);
+
+
+renderer.setSize(
+  innerWidth,
+  innerHeight
+);
+
+
+renderer.outputColorSpace =
+THREE.SRGBColorSpace;
+
+
+document.body.prepend(
+  renderer.domElement
+);
+
+
+/* =====================================================
+   UNIVERSO
+===================================================== */
+
+const universe =
+new THREE.Group();
+
+
+scene.add(
+  universe
+);
+
+
+const world =
+new THREE.Group();
+
+
+universe.add(
+  world
+);
+
+
+/* =====================================================
+   COLORES
+===================================================== */
+
+const PALETA=[
+
+  new THREE.Color(
+    "#38efff"
+  ),
+
+  new THREE.Color(
+    "#38efff"
+  ),
+
+  new THREE.Color(
+    "#00bfff"
+  ),
+
+  new THREE.Color(
+    "#678cff"
+  ),
+
+  new THREE.Color(
+    "#925cff"
+  ),
+
+  new THREE.Color(
+    "#ff43d7"
+  ),
+
+  new THREE.Color(
+    "#ff8be8"
+  ),
+
+  new THREE.Color(
+    "#ffffff"
+  )
+
+];
+
+
+/* =====================================================
+   PARTÍCULA BRILLANTE
+===================================================== */
+
+function texturaParticula(){
+
+  const canvas =
+  document.createElement(
+    "canvas"
+  );
+
+
+  canvas.width=64;
+  canvas.height=64;
+
+
+  const ctx =
+  canvas.getContext(
+    "2d"
+  );
+
+
+  const g =
+  ctx.createRadialGradient(
+
+    32,32,0,
+
+    32,32,32
+
+  );
+
+
+  g.addColorStop(
+    0,
+    "white"
+  );
+
+
+  g.addColorStop(
+    .15,
+    "rgba(255,255,255,1)"
+  );
+
+
+  g.addColorStop(
+    .4,
+    "rgba(70,235,255,.8)"
+  );
+
+
+  g.addColorStop(
+    .7,
+    "rgba(255,70,215,.2)"
+  );
+
+
+  g.addColorStop(
+    1,
+    "transparent"
+  );
+
+
+  ctx.fillStyle=g;
+
+
+  ctx.fillRect(
+    0,0,64,64
+  );
+
+
+  return new THREE.CanvasTexture(
+    canvas
+  );
+
+}
+
+
+const particleTexture =
+texturaParticula();
+
+
+/* =====================================================
+   ESTRELLAS 360°
+===================================================== */
+
+function crearCampoEstrellas(){
+
+  /*
+    Muchas estrellas,
+    pero optimizado para celular.
+  */
+
+  const cantidad =
+  22000;
+
+
+  const positions =
+  new Float32Array(
+    cantidad*3
+  );
+
+
+  const colors =
+  new Float32Array(
+    cantidad*3
+  );
+
+
+  for(
+    let i=0;
+    i<cantidad;
+    i++
+  ){
+
+    const radius =
+    10 +
+    Math.random()*105;
+
+
+    const theta =
+    Math.random()
+    *
+    Math.PI*2;
+
+
+    const phi =
+    Math.acos(
+      2*Math.random()-1
+    );
+
+
+    positions[i*3] =
+
+    radius *
+    Math.sin(phi) *
+    Math.cos(theta);
+
+
+    positions[i*3+1] =
+
+    radius *
+    Math.cos(phi);
+
+
+    positions[i*3+2] =
+
+    radius *
+    Math.sin(phi) *
+    Math.sin(theta);
+
+
+    const color =
+
+    PALETA[
+      Math.floor(
+        Math.random()
+        *
+        PALETA.length
+      )
+    ];
+
+
+    colors[i*3] =
+    color.r;
+
+
+    colors[i*3+1] =
+    color.g;
+
+
+    colors[i*3+2] =
+    color.b;
+
+  }
+
+
+  const geometry =
+  new THREE.BufferGeometry();
+
+
+  geometry.setAttribute(
+
+    "position",
+
+    new THREE.BufferAttribute(
+      positions,
+      3
+    )
+
+  );
+
+
+  geometry.setAttribute(
+
+    "color",
+
+    new THREE.BufferAttribute(
+      colors,
+      3
+    )
+
+  );
+
+
+  const material =
+  new THREE.PointsMaterial({
+
+    size:.17,
+
+    map:
+      particleTexture,
+
+    transparent:true,
+
+    vertexColors:true,
+
+    depthWrite:false,
+
+    blending:
+      THREE.AdditiveBlending
+
+  });
+
+
+  const stars =
+  new THREE.Points(
+
+    geometry,
+
+    material
+
+  );
+
+
+  world.add(
+    stars
+  );
+
+
+  return stars;
+
+}
+
+
+const stars =
+crearCampoEstrellas();
+
+
+/* =====================================================
+   NEBULOSAS
+===================================================== */
+
+function texturaNebulosa(
+  color
+){
+
+  const canvas =
+  document.createElement(
+    "canvas"
+  );
+
+
+  canvas.width=256;
+  canvas.height=256;
+
+
+  const ctx =
+  canvas.getContext(
+    "2d"
+  );
+
+
+  const g =
+  ctx.createRadialGradient(
+
+    128,128,0,
+
+    128,128,128
+
+  );
+
+
+  g.addColorStop(
+    0,
+    color
+  );
+
+
+  g.addColorStop(
+    .25,
+    color+"80"
+  );
+
+
+  g.addColorStop(
+    .6,
+    color+"20"
+  );
+
+
+  g.addColorStop(
+    1,
+    "transparent"
+  );
+
+
+  ctx.fillStyle=g;
+
+
+  ctx.fillRect(
+    0,0,256,256
+  );
+
+
+  return new THREE.CanvasTexture(
+    canvas
+  );
+
+}
+
+
+const nebulas=[];
+
+
+const nebulaColors=[
+
+  "#38eaff",
+
+  "#006eff",
+
+  "#814cff",
+
+  "#ff38cf"
+
+];
+
+
+for(
+  let i=0;
+  i<36;
+  i++
+){
+
+  const material =
+  new THREE.SpriteMaterial({
+
+    map:
+      texturaNebulosa(
+
+        nebulaColors[
+          i %
+          nebulaColors.length
+        ]
+
+      ),
+
+    transparent:true,
+
+    opacity:.25,
+
+    depthWrite:false,
+
+    blending:
+      THREE.AdditiveBlending
+
+  });
+
+
+  const n =
+  new THREE.Sprite(
+    material
+  );
+
+
+  const theta =
+  Math.random()
+  *
+  Math.PI*2;
+
+
+  const phi =
+  Math.acos(
+    2*Math.random()-1
+  );
+
+
+  const radius =
+  25 +
+  Math.random()*50;
+
+
+  n.position.set(
+
+    radius *
+    Math.sin(phi) *
+    Math.cos(theta),
+
+    radius *
+    Math.cos(phi),
+
+    radius *
+    Math.sin(phi) *
+    Math.sin(theta)
+
+  );
+
+
+  const size =
+  13 +
+  Math.random()*24;
+
+
+  n.scale.set(
+    size,
+    size,
+    1
+  );
+
+
+  world.add(
+    n
+  );
+
+
+  nebulas.push(
+    n
+  );
+
+}
+
+
+/* =====================================================
+   GALAXIAS
+===================================================== */
+
+const galaxias=[];
+
+
+function crearGalaxia(
+  x,y,z,
+  escala=1
+){
+
+  const group =
+  new THREE.Group();
+
+
+  const cantidad =
+  6500;
+
+
+  const positions =
+  new Float32Array(
+    cantidad*3
+  );
+
+
+  const colors =
+  new Float32Array(
+    cantidad*3
+  );
+
+
+  for(
+    let i=0;
+    i<cantidad;
+    i++
+  ){
+
+    const radius =
+
+    Math.pow(
+      Math.random(),
+      .55
+    )
+
+    *
+
+    10;
+
+
+    const arm =
+    i%5;
+
+
+    const angle =
+
+    arm *
+    Math.PI*2/5
+
+    +
+
+    radius*.8
+
+    +
+
+    (
+      Math.random()-.5
+    )*.7;
+
+
+    positions[i*3] =
+
+    Math.cos(angle)
+    *
+    radius;
+
+
+    positions[i*3+1] =
+
+    (
+      Math.random()-.5
+    )
+
+    *
+
+    (
+      .15 +
+      radius*.03
+    );
+
+
+    positions[i*3+2] =
+
+    Math.sin(angle)
+    *
+    radius;
+
+
+    const color =
+
+    PALETA[
+      Math.floor(
+        Math.random()
+        *
+        PALETA.length
+      )
+    ];
+
+
+    colors[i*3] =
+    color.r;
+
+
+    colors[i*3+1] =
+    color.g;
+
+
+    colors[i*3+2] =
+    color.b;
+
+  }
+
+
+  const geometry =
+  new THREE.BufferGeometry();
+
+
+  geometry.setAttribute(
+
+    "position",
+
+    new THREE.BufferAttribute(
+      positions,
+      3
+    )
+
+  );
+
+
+  geometry.setAttribute(
+
+    "color",
+
+    new THREE.BufferAttribute(
+      colors,
+      3
+    )
+
+  );
+
+
+  const material =
+  new THREE.PointsMaterial({
+
+    size:.13,
+
+    map:
+      particleTexture,
+
+    vertexColors:true,
+
+    transparent:true,
+
+    depthWrite:false,
+
+    blending:
+      THREE.AdditiveBlending
+
+  });
+
+
+  const particles =
+  new THREE.Points(
+
+    geometry,
+
+    material
+
+  );
+
+
+  group.add(
+    particles
+  );
+
+
+  group.position.set(
+    x,y,z
+  );
+
+
+  group.scale.setScalar(
+    escala
+  );
+
+
+  group.rotation.set(
+
+    Math.random()*1.2,
+
+    Math.random()*Math.PI,
+
+    Math.random()*.8
+
+  );
+
+
+  world.add(
+    group
+  );
+
+
+  galaxias.push(
+    group
+  );
+
+}
+
+
+/* =========================
+   GALAXIAS EN 360°
+========================= */
+
+crearGalaxia(
+  0,-8,-24,
+  1.4
+);
+
+
+crearGalaxia(
+  -25,3,-10,
+  1
+);
+
+
+crearGalaxia(
+  25,6,-8,
+  1.1
+);
+
+
+crearGalaxia(
+  0,5,28,
+  1.2
+);
+
+
+crearGalaxia(
+  4,26,-5,
+  .9
+);
+
+
+crearGalaxia(
+  -5,-27,4,
+  1
+);
+
+
+crearGalaxia(
+  22,-15,18,
+  .85
+);
+
+
+crearGalaxia(
+  -22,16,18,
+  .85
+);
+
+
+/* =====================================================
+   EMOJIS
+===================================================== */
+
+const objetos=[];
+
+
+/*
+   Guardamos las texturas
+   para mejorar rendimiento.
+*/
+
+const emojiCache =
+new Map();
+
+
+function texturaEmoji(
+  emoji
+){
+
+  if(
+    emojiCache.has(
+      emoji
+    )
+  ){
+
+    return emojiCache.get(
+      emoji
+    );
+
+  }
+
+
+  const canvas =
+  document.createElement(
+    "canvas"
+  );
+
+
+  canvas.width=256;
+  canvas.height=256;
+
+
+  const ctx =
+  canvas.getContext(
+    "2d"
+  );
+
+
+  ctx.textAlign=
+  "center";
+
+
+  ctx.textBaseline=
+  "middle";
+
+
+  ctx.font=
+  "160px Arial";
+
+
+  ctx.fillText(
+    emoji,
+    128,
+    128
+  );
+
+
+  const texture =
+  new THREE.CanvasTexture(
+    canvas
+  );
+
+
+  texture.colorSpace =
+  THREE.SRGBColorSpace;
+
+
+  emojiCache.set(
+    emoji,
+    texture
+  );
+
+
+  return texture;
+
+}
+
+
+function crearEmoji(
+
+  emoji,
+
+  x,y,z,
+
+  escala=1.5
+
+){
+
+  const sprite =
+  new THREE.Sprite(
+
+    new THREE.SpriteMaterial({
+
+      map:
+        texturaEmoji(
+          emoji
+        ),
+
+      transparent:true,
+
+      depthWrite:false
+
+    })
+
+  );
+
+
+  sprite.position.set(
+    x,y,z
+  );
+
+
+  sprite.scale.set(
+    escala,
+    escala,
+    1
+  );
+
+
+  sprite.userData.baseScale =
+  escala;
+
+
+  sprite.userData.phase =
+  Math.random()
+  *
+  Math.PI*2;
+
+
+  world.add(
+    sprite
+  );
+
+
+  objetos.push(
+    sprite
+  );
+
+
+  return sprite;
+
+}
+
+
+/* =====================================================
+   MUCHÍSIMAS DECORACIONES
+===================================================== */
+
+const decoraciones=[
+
+  "💙",
+  "🩵",
+  "💜",
+  "🩷",
+  "💗",
+  "💖",
+  "💕",
+
+  "🌹",
+  "🌸",
+  "🌺",
+  "🌷",
+  "🌼",
+  "💐",
+
+  "🦋",
+
+  "✨",
+  "⭐",
+  "🌟",
+  "💫",
+
+  "🎁",
+  "🎀",
+
+  "🎈",
+  "🎉",
+  "🎊",
+
+  "🎂",
+  "🧁",
+
+  "🌙"
+];
+
+
+/*
+   360 OBJETOS.
+
+   Repartidos por toda
+   la esfera alrededor
+   del usuario.
+*/
+
+for(
+  let i=0;
+  i<360;
+  i++
+){
+
+  const theta =
+  Math.random()
+  *
+  Math.PI*2;
+
+
+  const phi =
+  Math.acos(
+    2*Math.random()-1
+  );
+
+
+  /*
+     Hay objetos cercanos,
+     medianos y lejanos.
+  */
+
+  const radius =
+  8 +
+  Math.random()*54;
+
+
+  const x =
+
+  radius *
+  Math.sin(phi) *
+  Math.cos(theta);
+
+
+  const y =
+
+  radius *
+  Math.cos(phi);
+
+
+  const z =
+
+  radius *
+  Math.sin(phi) *
+  Math.sin(theta);
+
+
+  const emoji =
+
+  decoraciones[
+    Math.floor(
+      Math.random()
+      *
+      decoraciones.length
+    )
+  ];
+
+
+  crearEmoji(
+
+    emoji,
+
+    x,
+    y,
+    z,
+
+    .5 +
+    Math.random()*1.25
+
+  );
+
+}
+
+
+/* =====================================================
+   ELEMENTOS GRANDES ESPECIALES
+
+   No están todos en el centro.
+===================================================== */
+
+crearEmoji(
+  "🎂",
+  5,-3,-14,
+  3
+);
+
+
+crearEmoji(
+  "💐",
+  -12,5,-17,
+  2.5
+);
+
+
+crearEmoji(
+  "🎁",
+  14,6,-20,
+  2.5
+);
+
+
+crearEmoji(
+  "🦋",
+  13,12,-20,
+  2.2
+);
+
+
+crearEmoji(
+  "🌹",
+  -16,-7,-18,
+  2.2
+);
+
+
+crearEmoji(
+  "🎈",
+  18,-11,12,
+  2
+);
+
+
+crearEmoji(
+  "💖",
+  -18,12,15,
+  2.4
+);
+
+
+/* =====================================================
+   FRASES
+===================================================== */
+
+const frases=[
+
+"🎂 FELIZ CUMPLEAÑOS",
+
+"✨ QUE TODOS TUS SUEÑOS SE HAGAN REALIDAD",
+
+"💫 PIDE UN DESEO",
+
+"🩵 QUE SE CUMPLAN TODOS TUS DESEOS",
+
+"🌸 QUE TU DÍA ESTÉ LLENO DE ALEGRÍA",
+
+"💖 QUE SIEMPRE TENGAS MOTIVOS PARA SONREÍR",
+
+"✨ BRILLA SIEMPRE",
+
+"🦋 NUNCA DEJES DE SOÑAR",
+
+"🎈 DISFRUTA CADA MOMENTO",
+
+"💙 QUE TODO LO BONITO TE ENCUENTRE",
+
+"🌷 QUE LA VIDA TE REGALE MOMENTOS HERMOSOS",
+
+"🌟 QUE TUS METAS SE HAGAN REALIDAD",
+
+"💐 QUE SIEMPRE ESTÉS RODEADO DE CARIÑO",
+
+"🎁 QUE ESTE NUEVO AÑO TRAIGA MUCHAS SORPRESAS",
+
+"✨ UN AÑO MÁS DE AVENTURAS",
+
+"🩷 QUE NUNCA TE FALTEN SONRISAS",
+
+"💜 QUE NUNCA TE FALTEN SUEÑOS",
+
+"🌸 QUE CADA DÍA TENGA ALGO ESPECIAL",
+
+"🦋 SIGUE VOLANDO HACIA TUS SUEÑOS",
+
+"🌟 QUE TU LUZ NUNCA DEJE DE BRILLAR",
+
+"💫 QUE CADA DESEO ENCUENTRE SU CAMINO",
+
+"🎉 HOY ES TU DÍA",
+
+"🎂 DISFRUTA TU CUMPLEAÑOS",
+
+"💕 QUE SEAS MUY FELIZ",
+
+"✨ QUE VENGAN MUCHAS AVENTURAS",
+
+"🌺 QUE LA VIDA TE SONRÍA SIEMPRE",
+
+"💙 QUE TODO LO BUENO TE ACOMPAÑE",
+
+"🌷 QUE NUNCA TE FALTEN PERSONAS BONITAS",
+
+"💖 QUE CADA MOMENTO SE CONVIERTA EN UN RECUERDO",
+
+"🌟 SIGUE SIENDO TÚ",
+
+"🎀 QUE ESTE AÑO SEA INOLVIDABLE",
+
+"💫 QUE LOGRES TODO LO QUE TE PROPONGAS",
+
+"🩵 QUE TUS DÍAS ESTÉN LLENOS DE PAZ",
+
+"🌸 QUE SIEMPRE ENCUENTRES RAZONES PARA CELEBRAR",
+
+"🎁 QUE LA VIDA TE SORPRENDA CON COSAS HERMOSAS",
+
+"🦋 QUE NUNCA PIERDAS LAS GANAS DE SOÑAR",
+
+"✨ QUE TU CAMINO ESTÉ LLENO DE LUZ",
+
+"💗 QUE RECIBAS TODO EL CARIÑO QUE MERECES",
+
+"🌹 QUE ESTE NUEVO AÑO SEA AÚN MEJOR",
+
+"🎈 FELIZ VUELTA AL SOL",
+
+"💙 UN UNIVERSO DE BUENOS DESEOS PARA TI",
+
+"🌟 QUE CADA NUEVO DÍA SEA UNA NUEVA OPORTUNIDAD",
+
+"💐 QUE SIEMPRE HAYA FLORES EN TU CAMINO",
+
+"✨ QUE TUS SUEÑOS SEAN MÁS GRANDES QUE TUS MIEDOS",
+
+"🩷 QUE TU SONRISA NUNCA SE APAGUE",
+
+"🎉 CELEBRA TODO LO QUE HAS LOGRADO",
+
+"🌸 QUE ESTE CUMPLEAÑOS SEA MUY ESPECIAL",
+
+"💫 QUE LA MAGIA TE ACOMPAÑE SIEMPRE",
+
+"💙 QUE ESTE NUEVO AÑO ESTÉ LLENO DE MOMENTOS BONITOS",
+
+"🌸 QUE HOY COMIENCE UNA NUEVA AVENTURA",
+
+"✨ QUE TUS MEJORES MOMENTOS AÚN ESTÉN POR LLEGAR",
+
+"🦋 SIGUE VOLANDO TAN ALTO COMO TUS SUEÑOS",
+
+"🌟 QUE CADA ESTRELLA SEA UN DESEO PARA TI",
+
+"💗 QUE RECIBAS MUCHO CARIÑO",
+
+"🎁 QUE LA VIDA TE REGALE MUCHAS SORPRESAS",
+
+"🌷 QUE SIEMPRE HAYA ALGO BONITO ESPERÁNDOTE",
+
+"🩵 QUE TENGAS UN DÍA INOLVIDABLE",
+
+"💫 QUE TODO LO QUE SUEÑES ENCUENTRE SU CAMINO"
+
+];
+
+
+/* =====================================================
+   CREAR FRASES
+===================================================== */
+
+const textos=[];
+
+
+function crearTexto(
+
+  texto,
+
+  x,y,z,
+
+  color,
+
+  escala=.75
+
+){
+
+  const canvas =
+  document.createElement(
+    "canvas"
+  );
+
+
+  canvas.width=1800;
+  canvas.height=280;
+
+
+  const ctx =
+  canvas.getContext(
+    "2d"
+  );
+
+
+  ctx.clearRect(
+    0,0,
+    1800,280
+  );
+
+
+  ctx.textAlign=
+  "center";
+
+
+  ctx.textBaseline=
+  "middle";
+
+
+  ctx.font=
+  "bold 68px Arial";
+
+
+  ctx.lineWidth=9;
+
+
+  ctx.strokeStyle=
+  "rgba(0,0,15,.98)";
+
+
+  ctx.strokeText(
+    texto,
+    900,
+    140
+  );
+
+
+  ctx.shadowBlur=28;
+
+
+  ctx.shadowColor=
+  color;
+
+
+  ctx.fillStyle=
+  color;
+
+
+  ctx.fillText(
+    texto,
+    900,
+    140
+  );
+
+
+  const texture =
+  new THREE.CanvasTexture(
+    canvas
+  );
+
+
+  texture.colorSpace =
+  THREE.SRGBColorSpace;
+
+
+  const material =
+  new THREE.SpriteMaterial({
+
+    map:texture,
+
+    transparent:true,
+
+    depthWrite:false
+
+  });
+
+
+  const sprite =
+  new THREE.Sprite(
+    material
+  );
+
+
+  sprite.position.set(
+    x,y,z
+  );
+
+
+  sprite.scale.set(
+
+    13*escala,
+
+    2.05*escala,
+
+    1
+
+  );
+
+
+  sprite.userData.texto =
+  texto;
+
+
+  sprite.userData.originalScale =
+  escala;
+
+
+  world.add(
+    sprite
+  );
+
+
+  textos.push(
+    sprite
+  );
+
+}
+
+
+/* =====================================================
+   FRASES 360°
+===================================================== */
+
+frases.forEach(
+
+(frase,i)=>{
+
+  const total =
+  frases.length;
+
+
+  /*
+     Fibonacci sphere:
+     reparte mejor las frases.
+  */
+
+  const y =
+
+  1 -
+  (
+    i /
+    (total-1)
+  )*2;
+
+
+  const radiusXY =
+  Math.sqrt(
+    1-y*y
+  );
+
+
+  const golden =
+  Math.PI *
+  (
+    3-Math.sqrt(5)
+  );
+
+
+  const theta =
+  golden*i;
+
+
+  const distancia =
+
+  15 +
+  (i%5)*4.2;
+
+
+  const x =
+
+  Math.cos(theta)
+  *
+  radiusXY
+  *
+  distancia;
+
+
+  const yy =
+
+  y *
+  distancia;
+
+
+  const z =
+
+  Math.sin(theta)
+  *
+  radiusXY
+  *
+  distancia;
+
+
+  let color;
+
+
+  if(
+    i%4===0
+  ){
+
+    color=
+    "#ff70df";
+
+  }
+
+  else if(
+    i%5===0
+  ){
+
+    color=
+    "#a77cff";
+
+  }
+
+  else{
+
+    color=
+    "#65efff";
+
+  }
+
+
+  crearTexto(
+
+    frase,
+
+    x,
+    yy,
+    z,
+
+    color,
+
+    .58 +
+    (i%3)*.06
+
+  );
+
+});
+
+
+/* =====================================================
+   NOMBRE
+===================================================== */
+
+crearTexto(
+
+  `✨ ${NOMBRE.toUpperCase()} ✨`,
+
+  0,
+  5,
+  -14,
+
+  "#ffffff",
+
+  1.15
+
+);
+
+
+/* =====================================================
+   CORAZONES DE PARTÍCULAS
+===================================================== */
+
+const particleHearts=[];
+
+
+function crearCorazonParticulas(
+
+  x,y,z,
+
+  escala=1
+
+){
+
+  const cantidad =
+  1200;
+
+
+  const positions =
+  new Float32Array(
+    cantidad*3
+  );
+
+
+  const colors =
+  new Float32Array(
+    cantidad*3
+  );
+
+
+  for(
+    let i=0;
+    i<cantidad;
+    i++
+  ){
+
+    const t =
+    Math.random()
+    *
+    Math.PI*2;
+
+
+    const hx =
+
+    16 *
+    Math.pow(
+      Math.sin(t),
+      3
+    );
+
+
+    const hy =
+
+    13*Math.cos(t)
+
+    -
+
+    5*Math.cos(2*t)
+
+    -
+
+    2*Math.cos(3*t)
+
+    -
+
+    Math.cos(4*t);
+
+
+    positions[i*3] =
+
+    hx*.1
+
+    +
+
+    (
+      Math.random()-.5
+    )*.1;
+
+
+    positions[i*3+1] =
+
+    hy*.1
+
+    +
+
+    (
+      Math.random()-.5
+    )*.1;
+
+
+    positions[i*3+2] =
+
+    (
+      Math.random()-.5
+    )*.25;
+
+
+    const color =
+
+    Math.random()>.5
+
+    ?
+
+    new THREE.Color(
+      "#48efff"
+    )
+
+    :
+
+    new THREE.Color(
+      "#ff43d7"
+    );
+
+
+    colors[i*3] =
+    color.r;
+
+
+    colors[i*3+1] =
+    color.g;
+
+
+    colors[i*3+2] =
+    color.b;
+
+  }
+
+
+  const geometry =
+  new THREE.BufferGeometry();
+
+
+  geometry.setAttribute(
+
+    "position",
+
+    new THREE.BufferAttribute(
+      positions,
+      3
+    )
+
+  );
+
+
+  geometry.setAttribute(
+
+    "color",
+
+    new THREE.BufferAttribute(
+      colors,
+      3
+    )
+
+  );
+
+
+  const material =
+  new THREE.PointsMaterial({
+
+    size:.13,
+
+    map:
+      particleTexture,
+
+    vertexColors:true,
+
+    transparent:true,
+
+    depthWrite:false,
+
+    blending:
+      THREE.AdditiveBlending
+
+  });
+
+
+  const heart =
+  new THREE.Points(
+
+    geometry,
+
+    material
+
+  );
+
+
+  heart.position.set(
+    x,y,z
+  );
+
+
+  heart.scale.setScalar(
+    escala
+  );
+
+
+  world.add(
+    heart
+  );
+
+
+  particleHearts.push(
+    heart
+  );
+
+}
+
+
+/* =========================
+   CORAZONES EN 360°
+========================= */
+
+crearCorazonParticulas(
+  -9,5,-15,
+  1.7
+);
+
+
+crearCorazonParticulas(
+  14,7,-18,
+  1.3
+);
+
+
+crearCorazonParticulas(
+  -16,-7,-12,
+  1.4
+);
+
+
+crearCorazonParticulas(
+  15,-8,8,
+  1.4
+);
+
+
+crearCorazonParticulas(
+  -10,12,13,
+  1.5
+);
+
+
+crearCorazonParticulas(
+  8,-15,15,
+  1.4
+);
+
+
+crearCorazonParticulas(
+  2,18,-4,
+  1.3
+);
+
+
+crearCorazonParticulas(
+  -2,-19,-5,
+  1.3
+);
+
+
+crearCorazonParticulas(
+  20,4,14,
+  1.2
+);
+
+
+crearCorazonParticulas(
+  -20,3,15,
+  1.2
+);
+
+
+/* =====================================================
+   CONTROL
+
+   SIN TOCAR = GIRA SOLO
+
+   TOCAR = SE DETIENE
+
+   ARRASTRAR = LO MUEVES
+
+   SOLTAR = VUELVE A GIRAR
+===================================================== */
+
+let yaw=0;
+
+
+let pitch=0;
+
+
+let tocando=false;
+
+
+let moviendo=false;
+
+
+let oldX=0;
+
+
+let oldY=0;
+
+
+let movimientoTotal=0;
+
+
+/*
+   VELOCIDAD AUTOMÁTICA.
+
+   Muy lenta.
+*/
+
+const velocidadAutomatica =
+0.00030;
+
+
+/* =====================================================
+   TOCAR
+===================================================== */
+
+renderer.domElement
+.addEventListener(
+
+"pointerdown",
+
+e=>{
+
+  tocando=true;
+
+
+  moviendo=false;
+
+
+  movimientoTotal=0;
+
+
+  oldX=
+  e.clientX;
+
+
+  oldY=
+  e.clientY;
+
+
+  try{
+
+    renderer.domElement
+    .setPointerCapture(
+      e.pointerId
+    );
+
+  }
+
+  catch(error){}
+
+}
+
+);
+
+
+/* =====================================================
+   ARRASTRAR
+===================================================== */
+
+renderer.domElement
+.addEventListener(
+
+"pointermove",
+
+e=>{
+
+  if(
+    !tocando
+  )
+  return;
+
+
+  const dx =
+
+  e.clientX-
+  oldX;
+
+
+  const dy =
+
+  e.clientY-
+  oldY;
+
+
+  movimientoTotal +=
+
+  Math.abs(dx)
+
+  +
+
+  Math.abs(dy);
+
+
+  if(
+    movimientoTotal>4
+  ){
+
+    moviendo=true;
+
+  }
+
+
+  /*
+     MOVER UNIVERSO
+     CON EL DEDO.
+  */
+
+  yaw +=
+  dx*.0042;
+
+
+  pitch +=
+  dy*.0042;
+
+
+  pitch =
+  THREE.MathUtils.clamp(
+
+    pitch,
+
+    -1.48,
+
+    1.48
+
+  );
+
+
+  oldX=
+  e.clientX;
+
+
+  oldY=
+  e.clientY;
+
+}
+
+);
+
+
+/* =====================================================
+   SOLTAR
+
+   AUTOMÁTICAMENTE
+   VUELVE A GIRAR.
+===================================================== */
+
+function soltar(){
+
+  tocando=false;
+
+
+  setTimeout(
+
+    ()=>{
+
+      moviendo=false;
+
+    },
+
+    80
+
+  );
+
+}
+
+
+renderer.domElement
+.addEventListener(
+
+"pointerup",
+
+soltar
+
+);
+
+
+renderer.domElement
+.addEventListener(
+
+"pointercancel",
+
+soltar
+
+);
+
+
+/* =====================================================
+   TOCAR FRASE
+===================================================== */
+
+const raycaster =
+new THREE.Raycaster();
+
+
+const pointer =
+new THREE.Vector2();
+
+
+const lector =
+document.querySelector(
+  "#lector"
+);
+
+
+let lectorTimer;
+
+
+renderer.domElement
+.addEventListener(
+
+"click",
+
+e=>{
+
+  /*
+     Si arrastramos,
+     no abrir frase.
+  */
+
+  if(
+    movimientoTotal>8
+  )
+  return;
+
+
+  pointer.x =
+
+  (
+    e.clientX /
+    innerWidth
+  )*2-1;
+
+
+  pointer.y =
+
+  -(
+    e.clientY /
+    innerHeight
+  )*2+1;
+
+
+  raycaster.setFromCamera(
+
+    pointer,
+
+    camera
+
+  );
+
+
+  const hits =
+  raycaster.intersectObjects(
+    textos
+  );
+
+
+  if(
+    hits.length===0
+  )
+  return;
+
+
+  const frase =
+  hits[0].object;
+
+
+  lector.textContent =
+  frase.userData.texto;
+
+
+  lector.classList.add(
+    "visible"
+  );
+
+
+  clearTimeout(
+    lectorTimer
+  );
+
+
+  lectorTimer =
+  setTimeout(
+
+    ()=>{
+
+      lector.classList.remove(
+        "visible"
+      );
+
+    },
+
+    7000
+
+  );
+
+}
+
+);
+
+
+/* =====================================================
+   MÚSICA
+===================================================== */
+
+const botonMusica =
+document.querySelector(
+  "#musica"
+);
+
+
+const audio =
+document.querySelector(
+  "#audio"
+);
+
+
+let musicaActiva=false;
+
+
+botonMusica
+.addEventListener(
+
+"click",
+
+async e=>{
+
+  e.stopPropagation();
+
+
+  /*
+     SI ESTÁ SONANDO,
+     LA APAGAMOS.
+  */
+
+  if(
+    musicaActiva
+  ){
+
+    audio.pause();
+
+
+    musicaActiva=false;
+
+
+    botonMusica.textContent=
+    "🎵 MÚSICA";
+
+
+    botonMusica
+    .classList
+    .remove(
+      "activa"
+    );
+
+
+    return;
+
+  }
+
+
+  /*
+     INTENTAR REPRODUCIR
+     musica.mp3
+  */
+
+  try{
+
+    await audio.play();
+
+
+    musicaActiva=true;
+
+
+    botonMusica.textContent=
+    "🎵 SONANDO";
+
+
+    botonMusica
+    .classList
+    .add(
+      "activa"
+    );
+
+  }
+
+  catch(error){
+
+    /*
+       EL UNIVERSO SIGUE
+       FUNCIONANDO AUNQUE
+       TODAVÍA NO HAYA MP3.
+    */
+
+    botonMusica.textContent=
+    "🎵 SIN CANCIÓN";
+
+  }
+
+}
+
+);
+
+
+/* =====================================================
+   ENTRAR AL UNIVERSO
+
+   IMPORTANTE:
+   NO DEPENDE DE LA MÚSICA.
+===================================================== */
+
+let iniciado=false;
+
+
+const botonEntrar =
+document.querySelector(
+  "#entrar"
+);
+
+
+botonEntrar
+.addEventListener(
+
+"click",
+
+()=>{
+
+  /*
+     PRIMERO ENTRAMOS.
+
+     Incluso si no existe
+     musica.mp3.
+  */
+
+  iniciado=true;
+
+
+  const inicio =
+  document.querySelector(
+    "#inicio"
+  );
+
+
+  inicio.style.opacity=
+  "0";
+
+
+  inicio.style.pointerEvents=
+  "none";
+
+
+  setTimeout(
+
+    ()=>{
+
+      inicio.style.display=
+      "none";
+
+    },
+
+    800
+
+  );
+
+
+  /*
+     MOSTRAR MÚSICA.
+  */
+
+  botonMusica.style.display=
+  "block";
+
+
+  /*
+     MOSTRAR INSTRUCCIONES.
+  */
+
+  const ayuda =
+  document.querySelector(
+    "#ayuda"
+  );
+
+
+  ayuda.style.opacity=
+  ".9";
+
+
+  setTimeout(
+
+    ()=>{
+
+      ayuda.style.opacity=
+      ".2";
+
+    },
+
+    6500
+
+  );
+
+}
+
+);
+
+
+/* =====================================================
+   ANIMACIÓN
+===================================================== */
+
+const clock =
+new THREE.Clock();
+
+
+function animate(){
+
+  requestAnimationFrame(
+    animate
+  );
+
+
+  const time =
+  clock.getElapsedTime();
+
+
+  if(
+    iniciado
+  ){
+
+    /* ===============================================
+       UNIVERSO GIRA SOLO
+
+       Mientras NO tengas
+       el dedo puesto.
+    =============================================== */
+
+    if(
+      !tocando
+    ){
+
+      yaw +=
+      velocidadAutomatica;
+
+    }
+
+
+    /* ===============================================
+       APLICAR ROTACIÓN
+    =============================================== */
+
+    world.rotation.order=
+    "YXZ";
+
+
+    world.rotation.y=
+    yaw;
+
+
+    world.rotation.x=
+    pitch;
+
+
+    /* ===============================================
+       GALAXIAS
+    =============================================== */
+
+    galaxias.forEach(
+
+      (galaxia,i)=>{
+
+        galaxia.rotation.y +=
+
+        .00025
+
+        +
+
+        i*.00002;
+
+      }
+
+    );
+
+
+    /* ===============================================
+       CORAZONES
+    =============================================== */
+
+    particleHearts.forEach(
+
+      (heart,i)=>{
+
+        heart.rotation.y +=
+
+        .0004
+
+        +
+
+        i*.00002;
+
+
+        heart.rotation.z =
+
+        Math.sin(
+
+          time*.3+i
+
+        )*.05;
+
+      }
+
+    );
+
+
+    /* ===============================================
+       FLORES, CORAZONES,
+       MARIPOSAS, REGALOS...
+    =============================================== */
+
+    objetos.forEach(
+
+      objeto=>{
+
+        const base =
+
+        objeto.userData
+        .baseScale;
+
+
+        const pulse =
+
+        base
+
+        *
+
+        (
+          1
+
+          +
+
+          Math.sin(
+
+            time*.85
+
+            +
+
+            objeto.userData
+            .phase
+
+          )*.045
+        );
+
+
+        objeto.scale.set(
+
+          pulse,
+
+          pulse,
+
+          1
+
+        );
+
+      }
+
+    );
+
+
+    /* ===============================================
+       NEBULOSAS
+    =============================================== */
+
+    nebulas.forEach(
+
+      (n,i)=>{
+
+        n.material.opacity =
+
+        .21
+
+        +
+
+        Math.sin(
+
+          time*.3+i
+
+        )*.045;
+
+      }
+
+    );
+
+
+    /* ===============================================
+       ESTRELLAS
+    =============================================== */
+
+    stars.rotation.z =
+
+    Math.sin(
+      time*.05
+    )*.012;
+
+  }
+
+
+  renderer.render(
+
+    scene,
+
+    camera
+
+  );
+
+}
+
+
+animate();
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+window.addEventListener(
+
+"resize",
+
+()=>{
+
+  camera.aspect =
+
+  innerWidth /
+  innerHeight;
+
+
+  camera
+  .updateProjectionMatrix();
+
+
+  renderer.setSize(
+
+    innerWidth,
+
+    innerHeight
+
+  );
+
+}
+
+);
+
+</script>
+
+</body>
+</html>
