@@ -337,13 +337,7 @@ canvas{
 
 
 <!--
-  CUANDO TENGAS TU CANCIÓN:
-
-  pon un archivo llamado:
-
-  musica.mp3
-
-  junto al HTML.
+  CANCIÓN
 -->
 
 <audio id="audio" loop>
@@ -359,20 +353,6 @@ canvas{
 <div id="lector"></div>
 
 
-<div id="ayuda">
-
-  ✨ EL UNIVERSO GIRA SOLO
-
-  <br>
-
-  ✋ TOCA PARA DETENER
-
-  ·
-
-  👆 ARRASTRA PARA EXPLORAR
-
-</div>
-
 
 <script type="module">
 
@@ -382,11 +362,11 @@ canvas{
 ===================================================== */
 
 const NOMBRE =
-"TU NOMBRE";
+"Stecy";
 
 
 const EDAD =
-"18";
+"17";
 
 
 document.querySelector(
@@ -2737,14 +2717,7 @@ botonEntrar
 
 "click",
 
-()=>{
-
-  /*
-     PRIMERO ENTRAMOS.
-
-     Incluso si no existe
-     musica.mp3.
-  */
+async ()=>{
 
   iniciado=true;
 
@@ -2784,6 +2757,22 @@ botonEntrar
   botonMusica.style.display=
   "block";
 
+  try{
+    audio.currentTime= 0,
+      await audio.play();
+    musicaActiva = true;
+    
+    botonMusica.textContent =
+      "🎵 sonando";
+    botonMusica.classList.add(
+      "activa"
+      );
+
+  }catch(error){
+    musicaActiva = false;
+    botonMusica.textcontent =
+      "🎵 Música";
+  }
 
   /*
      MOSTRAR INSTRUCCIONES.
