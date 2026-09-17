@@ -2697,113 +2697,80 @@ async e=>{
 
 
 /* =====================================================
-   ENTRAR AL UNIVERSO
-
-   IMPORTANTE:
-   NO DEPENDE DE LA MÚSICA.
+   ENTRAR AL UNIVERSO + INICIAR MÚSICA
 ===================================================== */
 
-let iniciado=false;
-
+let iniciado = false;
 
 const botonEntrar =
-document.querySelector(
-  "#entrar"
-);
+document.querySelector("#entrar");
 
-
-botonEntrar
-.addEventListener(
-
+botonEntrar.addEventListener(
 "click",
-
 async ()=>{
 
-  iniciado=true;
-
+  iniciado = true;
 
   const inicio =
-  document.querySelector(
-    "#inicio"
-  );
+  document.querySelector("#inicio");
+
+  inicio.style.opacity = "0";
+  inicio.style.pointerEvents = "none";
+
+  setTimeout(()=>{
+    inicio.style.display = "none";
+  },800);
 
 
-  inicio.style.opacity=
-  "0";
+  /* MOSTRAR BOTÓN DE MÚSICA */
+
+  botonMusica.style.display = "block";
 
 
-  inicio.style.pointerEvents=
-  "none";
-
-
-  setTimeout(
-
-    ()=>{
-
-      inicio.style.display=
-      "none";
-
-    },
-
-    800
-
-  );
-
-
-  /*
-     MOSTRAR MÚSICA.
-  */
-
-  botonMusica.style.display=
-  "block";
+  /* INICIAR MÚSICA AUTOMÁTICAMENTE */
 
   try{
-    audio.currentTime= 0,
-      await audio.play();
+
+    audio.currentTime = 0;
+
+    await audio.play();
+
     musicaActiva = true;
-    
+
     botonMusica.textContent =
-      "🎵 sonando";
+    "🎵 SONANDO";
+
     botonMusica.classList.add(
       "activa"
-      );
+    );
 
   }catch(error){
+
+    /* El universo entra igual
+       aunque el audio falle */
+
     musicaActiva = false;
-    botonMusica.textcontent =
-      "🎵 Música";
+
+    botonMusica.textContent =
+    "🎵 MÚSICA";
+
   }
 
-  /*
-     MOSTRAR INSTRUCCIONES.
-  */
+
+  /* MOSTRAR AYUDA */
 
   const ayuda =
-  document.querySelector(
-    "#ayuda"
-  );
+  document.querySelector("#ayuda");
 
+  ayuda.style.opacity = ".9";
 
-  ayuda.style.opacity=
-  ".9";
+  setTimeout(()=>{
 
+    ayuda.style.opacity = ".2";
 
-  setTimeout(
+  },6500);
 
-    ()=>{
-
-      ayuda.style.opacity=
-      ".2";
-
-    },
-
-    6500
-
-  );
-
-}
-
-);
+});
 
 
 /* =====================================================
